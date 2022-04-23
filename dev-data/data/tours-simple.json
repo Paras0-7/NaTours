@@ -153,5 +153,6 @@
     "ratingsAverage": 4.6,
     "ratingsQuantity": 54,
     "price": 1197
-  }
+  },
+  { "id": 11, "name": "Rahul Tours", "price": 100 }
 ]

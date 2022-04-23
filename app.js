@@ -1,23 +1,22 @@
-// imports
 const express = require('express');
-const fs = require('fs');
 const morgan = require('morgan');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
-// express app
+
 const app = express();
 
-// middleware
-app.use(express.json()); // middleware 53
+app.use(express.json());
 
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   console.log('Hello from the middleware!!!');
   next();
 });
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
@@ -179,12 +178,15 @@ app.use(function (req, res, next) {
 
 //   return tour;
 // };
-
+app.use(express.static(`${__dirname}/public`));
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
+// console.log(app.get('env'));
 // server
-const port = 3000;
-app.listen(port, function () {
-  console.log(`App running on port ${port}.....`);
-});
+// const port = 3000;
+// app.listen(port, function () {
+//   console.log(`App running on port ${port}.....`);
+// });
+
+module.exports = app;

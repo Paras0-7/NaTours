@@ -40,7 +40,7 @@ exports.createTour = function (req, res) {
   tours.push(newTour);
 
   fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
+    `${__dirname}/../dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
     function (err) {
       res.status(201).json({
@@ -80,6 +80,26 @@ exports.deleteTour = function (req, res) {
   });
 };
 
+exports.checkId = function (req, res, next, val) {
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid Id',
+    });
+  }
+  next();
+};
+
+exports.checkBody = function (req, res, next) {
+  const { name, price } = req.body;
+  if (!name || !price) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Please add name and price for your tour',
+    });
+  }
+  next();
+};
 const getTourById = function (id) {
   const tour = tours.find(function (element) {
     return element.id === id;
