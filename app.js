@@ -12,11 +12,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use((req, res, next) => {
-  console.log('Hello from the middleware!!!');
-  next();
-});
-
-app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
@@ -182,6 +177,26 @@ app.use(express.static(`${__dirname}/public`));
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
+app.all('*', function (req, res, next) {
+  // res.status(404).json({
+  //   status: 'Fail',
+  //   message: `Can't find ${req.originalUrl} on this server`,
+  // });
+
+  const err = new Error(`Can't find ${req.originalUrl} on this server`);
+  err.status = 'fail';
+  err.statusCode = 504;
+  next(err);
+});
+
+app.use(function (err, req, res, next) {
+  err.statusCode = err.statusCode || 500;
+  err.stauts = err.status || 'error';
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
+  });
+});
 // console.log(app.get('env'));
 // server
 // const port = 3000;
