@@ -9,7 +9,8 @@ const AppError = require('./../utils/appError');
 
 exports.getAllTours = catchAsync(async function (req, res, next) {
   // console.log(req.query);
-
+  // console.log(req.url);
+  // console.log('original :', req.originalUrl);
   // execute query
   const features = new APIFeatures(Tour.find(), req.query)
     .filter()
@@ -35,6 +36,8 @@ exports.getAllTours = catchAsync(async function (req, res, next) {
 });
 
 exports.getTour = catchAsync(async function (req, res, next) {
+  // console.log(req.url);
+  // console.log('original :', req.originalUrl);
   // console.log(req.params);
   const id = req.params.id;
   // const tour = await Tour.find({ _id: id });
