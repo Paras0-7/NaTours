@@ -43,6 +43,11 @@ const handleValidationErrorDB = function (err) {
   return new AppError(message, 400);
 };
 
+const handleJWTError = (err) =>
+  new AppError('Invalid token, Please login again', 404);
+
+const handleJWTExpiredError = (err) =>
+  new AppError('Your token has expired. Please login again.', 401);
 module.exports = function (err, req, res, next) {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
@@ -53,6 +58,8 @@ module.exports = function (err, req, res, next) {
     if (err.name === 'CastError') err = handleCastErrorDB(err); // eg Invalid ID
     if (err.code === 11000) err = handleDuplicateFieldsDB(err); // creating a tour with an existing name
     if (err.name === 'ValidationError') err = handleValidationErrorDB(err);
+    if (err.name === 'JsonWebTokenError') err = handleJWTError(err);
+    if (err.name === 'TokenExpiredError') err = handleJWTExpiredError(err);
     sendErrorProd(err, res);
   }
 };
