@@ -4,8 +4,14 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+
+// npm packages
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
 
 const app = express();
 
@@ -14,8 +20,30 @@ const app = express();
 app.use(helmet());
 app.use(express.json({ limit: '10kb' }));
 
-// Data Sanitization
+// Data Sanitization against NoSQL query injection
+// {
+// "name" : {"$gt":""}
+// "password":"parss"
+// }
 
+app.use(mongoSanitize());
+
+// Data Sanitization against XSS attacks
+
+app.use(xss());
+
+// prevent parameter pollutioin
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'difficulty',
+      'price',
+    ],
+  })
+);
 // rate-limiter : request per IP
 
 // 100 request from same IP in one hour

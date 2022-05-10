@@ -21,8 +21,9 @@ class APIFeatures {
     // console.log(JSON.parse(queryStr));
 
     // let query = Tour.find(JSON.parse(queryStr));
-    console.log(JSON.parse(queryStr));
+    console.log(queryObj);
     this.query.find(JSON.parse(queryStr));
+
     return this;
   }
 
@@ -31,6 +32,7 @@ class APIFeatures {
 
     if (this.queryString.sort) {
       // ?sort = price,ratingsAverage
+
       const sortBy = this.queryString.sort.split(',').join(' ');
       this.query = this.query.sort(sortBy);
     } else {
