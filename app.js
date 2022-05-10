@@ -4,11 +4,28 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const app = express();
 
-app.use(express.json());
+// global middlewares
+// Security HTTP Headers
+app.use(helmet());
+app.use(express.json({ limit: '10kb' }));
 
+// Data Sanitization
+
+// rate-limiter : request per IP
+
+// 100 request from same IP in one hour
+const limiter = rateLimit({
+  max: 100,
+  windowMS: 60 * 60 * 1000,
+  message: 'Too many requests from this IP, Please try again in an hour',
+});
+
+app.use('/api', limiter);
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }

@@ -5,6 +5,7 @@ const catchAsync = require('./../utils/catchAsync');
 const { promisify } = require('util');
 const sendEmail = require('./../utils/email');
 const crypto = require('crypto');
+const { cookie } = require('express/lib/response');
 
 const signToken = function (id) {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -14,6 +15,20 @@ const signToken = function (id) {
 
 const createSendToken = function (user, statusCode, res) {
   const token = signToken(user._id);
+
+  // send a cookie
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    // secure: true, // cookie will only be send on an incrypted connection https
+    httpOnly: true, // cookie can not be access or modified by the browser
+  };
+
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  res.cookie('jwt', token, cookieOptions);
+
+  user.password = undefined;
   res.status(statusCode).json({
     status: 'Success',
     token,
@@ -114,6 +129,7 @@ exports.forgotPassword = catchAsync(async function (req, res, next) {
   // generate the random reset token
 
   const resetToken = user.generatePasswordResetToken();
+  // await user.save({});
   await user.save({ validateBeforeSave: false });
 
   // send it to user's email
