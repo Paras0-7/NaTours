@@ -18,7 +18,7 @@ const app = express();
 // global middlewares
 // Security HTTP Headers
 app.use(helmet());
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json());
 
 // Data Sanitization against NoSQL query injection
 // {

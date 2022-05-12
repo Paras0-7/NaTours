@@ -71,6 +71,38 @@ const tourSchema = new mongoose.Schema(
     },
     startDates: [Date],
     slug: String,
+    // embeded data
+    startLocation: {
+      // GeoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: {
@@ -91,19 +123,29 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
 // tourSchema.post('save', function (doc, next) {
 //   console.log(doc);
 //   next();
 // });
 
 // query middleware
+
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   next();
 });
-const Tour = mongoose.model('Tour', tourSchema);
-
-module.exports = Tour;
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
+  next();
+});
 
 // aggregation middleware
 tourSchema.pre('aggregate', function (next) {
@@ -147,3 +189,7 @@ tourSchema.pre('aggregate', function (next) {
 //   .save()
 //   .then((doc) => console.log('Document Created', doc))
 //   .catch((err) => console.log(err));
+
+const Tour = mongoose.model('Tour', tourSchema);
+
+module.exports = Tour;

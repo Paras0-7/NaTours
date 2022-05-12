@@ -6,6 +6,7 @@ class APIFeatures {
 
   filter() {
     const queryObj = { ...this.queryString };
+    // console.log('query', queryObj);
 
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach(function (key) {
@@ -21,12 +22,12 @@ class APIFeatures {
     // console.log(JSON.parse(queryStr));
 
     // let query = Tour.find(JSON.parse(queryStr));
-    console.log(queryObj);
+    console.log(JSON.parse(queryStr));
     this.query.find(JSON.parse(queryStr));
 
     return this;
   }
-
+  // {"duration":["5","9"]}
   sort() {
     // sorting
 
