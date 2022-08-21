@@ -4,6 +4,26 @@ toursData = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
 
+exports.checkId = function (req, res, next, val) {
+  console.log('Params Middleware');
+  if (req.params.id * 1 > toursData.length - 1) {
+    return res.status(404).json({
+      status: 'fail',
+    });
+  }
+  next();
+};
+
+exports.checkBody = function (req, res, next) {
+  if (!req.body.name || !req.body.price) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'A tour must contain a name and a price',
+    });
+  }
+  next();
+};
+
 exports.getAllTours = function (req, res) {
   res.status(200).json({
     status: 'Success',

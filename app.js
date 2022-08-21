@@ -6,6 +6,8 @@ const userRouter = require('./routes/userRoutes');
 const app = express();
 app.use(express.json());
 
+app.use(express.static(`${__dirname}/ public`));
+
 app.use(function (req, res, next) {
   console.log('Hello from the middleware');
   next();
@@ -14,7 +16,4 @@ app.use(function (req, res, next) {
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
-const port = 3000;
-app.listen(port, function () {
-  console.log('App running on port 3000');
-});
+module.exports = app;
