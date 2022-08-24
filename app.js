@@ -6,7 +6,7 @@ const userRouter = require('./routes/userRoutes');
 const app = express();
 app.use(express.json());
 
-app.use(express.static(`${__dirname}/ public`));
+app.use(express.static(`${__dirname}/public`));
 
 app.use(function (req, res, next) {
   console.log('Hello from the middleware');
