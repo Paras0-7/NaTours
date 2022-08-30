@@ -2,7 +2,7 @@ const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const jwt = require('jsonwebtoken');
-
+const { promisify } = require('util');
 const jwtSignToken = function (id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -62,7 +62,23 @@ exports.protectedRoute = catchAsync(async function (req, res, next) {
     );
   }
   // 2) Validate the token
+
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
   // 3) check if user still exists
+
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser)
+    return next(
+      new AppError('The user belonging to this token does no longer exist', 401)
+    );
   // 4) check if user changed password after the token was issued
+
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError('User recently changed password! Please login again...', 401)
+    );
+  }
+  req.user = currentUser;
   next();
 });
