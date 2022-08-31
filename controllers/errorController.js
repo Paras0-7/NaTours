@@ -30,6 +30,7 @@ module.exports = function (err, req, res, next) {
 
   console.log('Error');
   if (process.env.NODE_ENV === 'development') {
+    console.log('Inside DEv');
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message,

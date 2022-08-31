@@ -15,12 +15,12 @@ mongoose
   })
   .then((con) => console.log('Database Connected'));
 
-const app = require('./app');
 process.on('uncaughtException', function (err) {
   console.log('Unhandled Exception! Shutting down...');
 
   process.exit(1);
 });
+const app = require('./app');
 
 const port = process.env.PORT;
 
