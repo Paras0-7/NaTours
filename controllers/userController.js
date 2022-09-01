@@ -68,3 +68,12 @@ exports.updateMyData = catchAsync(async function (req, res, next) {
     },
   });
 });
+
+exports.deactivateAccount = catchAsync(async function (req, res, next) {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(204).json({
+    status: 'Success',
+    data: null,
+  });
+});

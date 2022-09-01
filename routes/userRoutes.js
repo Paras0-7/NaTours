@@ -13,6 +13,12 @@ router.patch(
   authController.updatePassword
 );
 
+router.delete(
+  '/deactivateMyAccount',
+  authController.protectedRoute,
+  userController.deactivateAccount
+);
+
 router.patch(
   '/updateMyData',
   authController.protectedRoute,

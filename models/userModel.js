@@ -43,6 +43,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 // document middleware
@@ -64,6 +69,11 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+// query middleware
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
 // instance methods : available on all documents
 
 userSchema.methods.correctPassword = async function (
