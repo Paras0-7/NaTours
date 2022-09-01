@@ -2,6 +2,7 @@ const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const jwt = require('jsonwebtoken');
+const sendEmail = require('./../utils/email');
 const { promisify } = require('util');
 const jwtSignToken = function (id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -94,3 +95,28 @@ exports.restrictTo = function (...roles) {
     next();
   };
 };
+
+// forgot password
+
+exports.forgotPassword = catchAsync(async function (req, res, next) {
+  // 1) Get User based on POSTed email
+
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(
+      new AppError('There is no user with the provided email address', 404)
+    );
+  }
+
+  // 2) Generate the random reset token
+  const resetToken = user.createPasswordResetToken();
+
+  await user.save({ validateBeforeSave: false });
+  // 3) Send it to user's email
+  const resetURL = `${req.protocol}://${req.get(
+    'host'
+  )}/api/v1/users/resetPassword/${resetToken}`;
+});
+
+// reset password
+exports.resetPassword = function (req, res, next) {};
