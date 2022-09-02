@@ -1,6 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
-
+const helmet = require('helmet');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/appError');
@@ -18,6 +18,10 @@ const limiter = rateLimit({
   message: 'To many requests from this IP! Please try again in an hour',
 });
 app.use('/api', limiter);
+
+// security headers
+
+app.use(helmet());
 app.use(express.json());
 
 app.use(express.static(`${__dirname}/public`));
