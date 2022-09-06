@@ -17,9 +17,7 @@ mongoose
   })
   .then((con) => console.log('Database Connected'));
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 const importData = async function () {
   try {
@@ -36,4 +34,4 @@ const deleteData = async () => {
   } catch (err) {}
 };
 deleteData();
-importData();
+// importData();
