@@ -16,7 +16,8 @@ mongoose
   .then((con) => console.log('Database Connected'));
 
 process.on('uncaughtException', function (err) {
-  console.log('Unhandled Exception! Shutting down...');
+  console.log(err);
+  // console.log('Unhandled Exception! Shutting down...');
 
   process.exit(1);
 });

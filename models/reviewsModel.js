@@ -36,10 +36,15 @@ const reviewsSchema = new mongoose.Schema(
 // Qwery middleware
 
 reviewsSchema.pre(/^find/, function (next) {
-  // this.populate({ path: '' , select : '-__v -passwordChangedAt'});
+  console.log('Populate');
+  this.populate({
+    path: 'tour',
+    select: 'name',
+  });
+
   next();
 });
 
-const Review = new mongoose.Model('Review', reviewsSchema);
+const Review = new mongoose.model('Review', reviewsSchema);
 
 module.exports = Review;
