@@ -120,7 +120,8 @@ tourSchema.pre('save', function (next) {
 
 // runs before .find()
 
-tourSchema.pre('find', function (next) {
+tourSchema.pre(/^find/, function (next) {
+  this.populate({ path: 'guides', select: '-__v -passwordChangedAt' });
   next();
 });
 
