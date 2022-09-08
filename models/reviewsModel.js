@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const reviewsSchema = new mongoose.Schema(
+const reviewSchema = new mongoose.Schema(
   {
     review: {
       type: String,
@@ -35,16 +35,22 @@ const reviewsSchema = new mongoose.Schema(
 
 // Qwery middleware
 
-reviewsSchema.pre(/^find/, function (next) {
-  console.log('Populate');
+reviewSchema.pre(/^find/, function (next) {
+  // this.populate({
+  //   path: 'tour',
+  //   select: 'name',
+  // }).populate({
+  //   path: 'user',
+  //   select: 'name photo',
+  // });
   this.populate({
-    path: 'tour',
-    select: 'name',
+    path: 'user',
+    select: 'name photo',
   });
 
   next();
 });
 
-const Review = new mongoose.model('Review', reviewsSchema);
+const Review = new mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
