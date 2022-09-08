@@ -24,6 +24,12 @@ router.patch(
   authController.protectedRoute,
   userController.updateMyData
 );
+router.get(
+  '/me',
+  authController.protectedRoute,
+  userController.getMe,
+  userController.getUser
+);
 router
   .route('/')
   .get(userController.getAllUsers)

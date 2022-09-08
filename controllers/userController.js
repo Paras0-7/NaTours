@@ -20,6 +20,10 @@ exports.createUser = catchAsync(async function (req, res, next) {
   });
 });
 
+exports.getMe = function (req, res, next) {
+  req.params.id = req.user.id;
+  next();
+};
 exports.updateMyData = catchAsync(async function (req, res, next) {
   console.log('Data');
   // 1) Create error if user POSTs password data
