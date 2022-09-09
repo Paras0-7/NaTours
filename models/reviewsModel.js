@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Tour = require('./tourModel');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -32,7 +33,12 @@ const reviewSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+// document middlewares
 
+reviewSchema.post('save', function () {
+  // this.constructor points to model
+  this.constructor.calcAverageRatings(this.tour);
+});
 // Qwery middleware
 
 reviewSchema.pre(/^find/, function (next) {
@@ -50,7 +56,33 @@ reviewSchema.pre(/^find/, function (next) {
 
   next();
 });
+// static methods  : called on the model (Review.fn())
+reviewSchema.statics.calcAverageRatings = async function (tourId) {
+  const stats = await this.aggregate([
+    {
+      $match: { tour: tourId },
+    },
+    {
+      $group: {
+        _id: '$tour',
+        numRatings: { $num: 1 },
+        avgRatings: { $avg: '$rating' },
+      },
+    },
+  ]);
 
+  await Tour.findByIdAndUpdate(tourId, {
+    ratingsQuantity: stats[0].numRatings,
+    ratingsAverage: stats[0].avgRatings,
+  });
+};
+
+// findByIdAndUpdate
+// findByIdAndDelete
+
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  const query = await this.findOne();
+});
 const Review = new mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
