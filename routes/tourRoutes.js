@@ -7,17 +7,31 @@ const authController = require('./../controllers/authController');
 router
   .route('/top-5-cheap-tours')
   .get(tourController.aliasTopTours, tourController.getAllTours);
-router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
+router
+  .route('/monthly-plan/:year')
+  .get(
+    authController.protectedRoute,
+    authController.restrictTo('admin', 'lead-guide', 'guide'),
+    tourController.getMonthlyPlan
+  );
 router.route('/tour-stats').get(tourController.getTourStats);
 router
   .route('/')
-  .get(authController.protectedRoute, tourController.getAllTours)
-  .post(tourController.createTour);
+  .get(tourController.getAllTours)
+  .post(
+    authController.protectedRoute,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.createTour
+  );
 
 router
   .route('/:id')
   .get(tourController.getTour)
-  .patch(tourController.updateTour)
+  .patch(
+    authController.protectedRoute,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.updateTour
+  )
   .delete(
     authController.protectedRoute,
     authController.restrictTo('admin', 'lead-guide'),

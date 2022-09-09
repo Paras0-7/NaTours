@@ -23,8 +23,8 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour  must have a difficulty'],
       enum: {
-        values: ['easy', ' medium', 'difficult'],
-        message: 'Diffulty is either easy, meduim, or difficult',
+        values: ['easy', 'medium', 'difficult'],
+        message: 'Diffulty is either easy, medium, or difficult',
       },
     },
     ratingsAverage: {
@@ -139,7 +139,7 @@ tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   next();
 });
-tourSchema.post('save', function (doc, next) {});
+
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
