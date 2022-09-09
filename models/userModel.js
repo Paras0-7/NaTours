@@ -70,10 +70,7 @@ userSchema.pre('save', async function (next) {
 });
 
 // query middleware
-userSchema.pre(/^find/, function (next) {
-  this.find({ active: { $ne: false } });
-  next();
-});
+
 // instance methods : available on all documents
 
 userSchema.methods.correctPassword = async function (

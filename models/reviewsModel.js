@@ -65,23 +65,36 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
     {
       $group: {
         _id: '$tour',
-        numRatings: { $num: 1 },
+        numRatings: { $sum: 1 },
         avgRatings: { $avg: '$rating' },
       },
     },
   ]);
 
-  await Tour.findByIdAndUpdate(tourId, {
-    ratingsQuantity: stats[0].numRatings,
-    ratingsAverage: stats[0].avgRatings,
-  });
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].numRatings,
+      ratingsAverage: stats[0].avgRatings,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
 };
 
 // findByIdAndUpdate
 // findByIdAndDelete
 
 reviewSchema.pre(/^findOneAnd/, async function (next) {
-  const query = await this.findOne();
+  this.review = await this.findOne();
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  // await this.findOne() does not work here because the query has been executed
+  await this.review.constructor.calcAverageRatings(this.review.tour);
 });
 const Review = new mongoose.model('Review', reviewSchema);
 
