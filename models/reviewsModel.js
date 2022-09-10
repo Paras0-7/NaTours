@@ -33,6 +33,10 @@ const reviewSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// indexes
+
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 // document middlewares
 
 reviewSchema.post('save', function () {
